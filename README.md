@@ -14,7 +14,8 @@
     - [`LazyCell`](https://doc.rust-lang.org/std/cell/struct.LazyCell.html)
 - "copy" cells (don't give out references at all)
     - [`Cell`](https://doc.rust-lang.org/std/cell/struct.Cell.html)
-        - I lied, there's a [`.get_mut()`](https://doc.rust-lang.org/std/cell/struct.Cell.html#method.get_mut) method, and it's perfectly safe.
+        - [with thread-locals](https://github.com/rust-lang/rust/blob/17584a181979f04f2aaad867332c22db1caa511a/library/std/src/thread/spawnhook.rs#L12)
+        - I lied about references; there's a [`.get_mut()`](https://doc.rust-lang.org/std/cell/struct.Cell.html#method.get_mut) method, and it's perfectly safe.
         - If you think that's weird, take a look at [`.from_mut()`](https://doc.rust-lang.org/std/cell/struct.Cell.html#method.from_mut).
     - [`std::sync::atomic`](https://doc.rust-lang.org/std/sync/atomic/)
 - [`UnsafeCell`](https://doc.rust-lang.org/std/cell/struct.UnsafeCell.html)
