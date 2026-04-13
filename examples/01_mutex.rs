@@ -1,19 +1,19 @@
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
-static MY_STRING: Mutex<String> = Mutex::new(String::new());
-
-fn thread1() {
-    MY_STRING.lock().unwrap().push_str("hello ");
-}
-
-fn thread2() {
-    MY_STRING.lock().unwrap().push_str("world ");
-}
+static MY_STRING1: Mutex<String> = Mutex::new(String::new());
 
 fn main() {
-    let join1 = std::thread::spawn(thread1);
-    let join2 = std::thread::spawn(thread2);
-    join1.join().unwrap();
-    join2.join().unwrap();
-    println!("{}", MY_STRING.lock().unwrap());
+    let my_string2 = Arc::new(Mutex::new(String::new()));
+    let joiner = {
+        let my_string2 = Arc::clone(&my_string2);
+        std::thread::spawn(move || {
+            MY_STRING1.lock().unwrap().push_str("world ");
+            my_string2.lock().unwrap().push_str("moon ");
+        })
+    };
+    MY_STRING1.lock().unwrap().push_str("hello ");
+    my_string2.lock().unwrap().push_str("goodnight ");
+    joiner.join().unwrap();
+    println!("{}", MY_STRING1.lock().unwrap());
+    println!("{}", my_string2.lock().unwrap());
 }

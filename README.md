@@ -9,8 +9,8 @@
     - [`LazyLock`](https://doc.rust-lang.org/std/sync/struct.LazyLock.html)
     - [`OnceCell`](https://doc.rust-lang.org/std/cell/struct.OnceCell.html)
     - [`LazyCell`](https://doc.rust-lang.org/std/cell/struct.LazyCell.html)
-- "copy" cells (don't give out references)
-    - [`std::sync::atomic`](https://doc.rust-lang.org/std/sync/atomic/)
+- "copy" cells (don't give out references at all)
     - [`Cell`](https://doc.rust-lang.org/std/cell/struct.Cell.html)
+    - [`std::sync::atomic`](https://doc.rust-lang.org/std/sync/atomic/)
 - inside all of these
     - [`UnsafeCell`](https://doc.rust-lang.org/std/cell/struct.UnsafeCell.html)
