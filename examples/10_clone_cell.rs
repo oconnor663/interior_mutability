@@ -1,4 +1,5 @@
 use std::cell::UnsafeCell;
+use std::rc::Rc;
 
 struct BadCell<T>(UnsafeCell<T>);
 
@@ -16,40 +17,40 @@ impl<T> BadCell<T> {
 
 impl<T: Clone> Clone for BadCell<T> {
     fn clone(&self) -> Self {
-        let value = unsafe { &*self.0.get() }.clone();
-        BadCell::new(value)
+        unsafe { BadCell::new((*self.0.get()).clone()) }
     }
 }
 
-#[derive(Copy)]
 struct EvilCloner {
     data: Option<&'static u64>,
-}
-
-thread_local! {
-    static EVIL: BadCell<EvilCloner> = BadCell::new(EvilCloner {
-        data: Some(&42),
-    });
+    friends: Vec<Rc<BadCell<EvilCloner>>>,
 }
 
 impl Clone for EvilCloner {
     fn clone(&self) -> Self {
-        let ptr_ptr: Option<&&u64> = match &self.data {
+        let my_data: Option<&&u64> = match &self.data {
             Some(ptr) => Some(ptr),
             None => None,
         };
-        EVIL.with(|evil| {
-            evil.set(EvilCloner { data: None });
-        });
-        if let Some(ptr_ptr) = ptr_ptr {
-            dbg!(**ptr_ptr);
+        if let Some(friend) = self.friends.first() {
+            friend.set(EvilCloner {
+                data: None,
+                friends: Vec::new(),
+            });
         }
-        *self
+        println!("my data: {}", **my_data.unwrap());
+        unreachable!()
     }
 }
 
 fn main() {
-    EVIL.with(|evil| {
-        _ = evil.clone();
+    let cell = Rc::new(BadCell::new(EvilCloner {
+        data: Some(&42),
+        friends: Vec::new(),
+    }));
+    cell.set(EvilCloner {
+        data: Some(&42),
+        friends: vec![Rc::clone(&cell)],
     });
+    _ = BadCell::clone(&cell);
 }
