@@ -16,6 +16,6 @@ static MY_MAP2: LazyLock<Mutex<HashMap<i32, i32>>> =
 
 fn main() {
     assert_eq!(MY_MAP.get(&42), Some(&99));
-    // MY_MAP.insert(1, 2);
-    MY_MAP2.lock().unwrap().insert(1, 2);
+    // MY_MAP.insert(43, 100);
+    MY_MAP2.lock().unwrap().insert(43, 100);
 }
